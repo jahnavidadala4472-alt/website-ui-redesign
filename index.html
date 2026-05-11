@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usability Testing & Analysis Report: Nexus Cloud</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome (No SVG Constraint) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Tailwind Configuration for Night Owl Theme -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            500: '#8b5cf6', // Electric Violet
+                            600: '#7c3aed', 
+                            900: '#4c1d95',
+                        },
+                        accent: {
+                            500: '#06b6d4', // Cyan Accent
+                        },
+                        surface: {
+                            50: '#fafafa',
+                            100: '#f4f4f5',
+                            200: '#e4e4e7',
+                            800: '#1e293b', // Deep Slate
+                            900: '#0f172a', // Darkest Navy
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px; 
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f4f4f5; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d4d4d8; border-radius: 4px; }
+        
+        .view-section { display: none; opacity: 0; transition: opacity 0.3s ease-in-out; }
+        .view-section.active { display: block; opacity: 1; animation: fadeIn 0.4s; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body class="bg-surface-50 text-surface-800 font-sans antialiased">
+
+    <!-- Top Navigation / App Header -->
+    <header class="bg-surface-900 border-b border-white/10 sticky top-0 z-50 shadow-lg">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center text-white shadow-[0_0_15px_rgba(139,92,246,0.5)]">
+                    <i class="fa-solid fa-flask"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight text-white tracking-tight">Nexus OS Usability</h1>
+                </div>
+            </div>
+            
+            <!-- Desktop Nav -->
+            <nav class="hidden md:flex gap-1 bg-white/5 p-1 rounded-xl border border-white/10">
+                <button onclick="navigate('dashboard')" id="nav-dashboard" class="nav-btn px-4 py-1.5 rounded-lg text-sm font-semibold transition-all bg-brand-500 text-white shadow-sm">Executive Summary</button>
+                <button onclick="navigate('tasks')" id="nav-tasks" class="nav-btn px-4 py-1.5 rounded-lg text-sm font-semibold transition-all text-surface-200 hover:text-white">Task Analysis</button>
+                <button onclick="navigate('action')" id="nav-action" class="nav-btn px-4 py-1.5 rounded-lg text-sm font-semibold transition-all text-surface-200 hover:text-white">Action Plan</button>
+            </nav>
+
+            <!-- Mobile Menu Toggle -->
+            <button class="md:hidden text-surface-200 hover:text-white" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+        </div>
+        
+        <!-- Mobile Nav -->
+        <div id="mobile-menu" class="hidden md:hidden border-t border-white/10 bg-surface-900">
+            <div class="px-4 pt-2 pb-4 space-y-1">
+                <button onclick="navigate('dashboard'); document.getElementById('mobile-menu').classList.add('hidden')" class="block w-full text-left px-3 py-2 text-brand-500 font-medium bg-white/5 rounded-md">Executive Summary</button>
+                <button onclick="navigate('tasks'); document.getElementById('mobile-menu').classList.add('hidden')" class="block w-full text-left px-3 py-2 text-surface-200 font-medium hover:bg-white/5 rounded-md">Task Analysis</button>
+                <button onclick="navigate('action'); document.getElementById('mobile-menu').classList.add('hidden')" class="block w-full text-left px-3 py-2 text-surface-200 font-medium hover:bg-white/5 rounded-md">Action Plan</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- ========================================== -->
+        <!-- VIEW 1: EXECUTIVE SUMMARY                  -->
+        <!-- ========================================== -->
+        <section id="view-dashboard" class="view-section active">
+            <div class="mb-8">
+                <h2 class="text-2xl font-extrabold text-surface-900 mb-2">Executive Summary</h2>
+                <p class="text-surface-600">High-level usability testing results for the Nexus OS Dashboard. Metrics compared against industry standard benchmarks.</p>
+            </div>
+
+            <!-- Top Metric Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div class="bg-white p-5 rounded-2xl border border-surface-200 shadow-sm flex flex-col justify-between group hover:border-brand-500 transition-colors">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-xs font-bold text-surface-400 uppercase tracking-wider">Success Rate</span>
+                        <div class="w-8 h-8 rounded-lg bg-brand-50 flex items-center justify-center text-brand-500 group-hover:bg-brand-500 group-hover:text-white transition-all">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-3xl font-bold text-surface-900">85%</h3>
+                        <p class="text-xs font-semibold text-accent-500 mt-1 flex items-center gap-1">
+                            <i class="fa-solid fa-arrow-trend-up"></i> +7% vs Benchmark
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-5 rounded-2xl border border-surface-200 shadow-sm flex flex-col justify-between group hover:border-brand-500 transition-colors">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-xs font-bold text-surface-400 uppercase tracking-wider">Time on Task</span>
+                        <div class="w-8 h-8 rounded-lg bg-accent-50 flex items-center justify-center text-accent-500 group-hover:bg-accent-500 group-hover:text-white transition-all">
+                            <i class="fa-solid fa-stopwatch"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-3xl font-bold text-surface-900">42s</h3>
+                        <p class="text-xs font-semibold text-accent-500 mt-1 flex items-center gap-1">
+                            <i class="fa-solid fa-bolt"></i> 18s faster
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-surface-200 shadow-sm flex flex-col justify-between group hover:border-brand-500 transition-colors">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-xs font-bold text-surface-400 uppercase tracking-wider">SUS Score</span>
+                        <div class="w-8 h-8 rounded-lg bg-brand-50 flex items-center justify-center text-brand-500 group-hover:bg-brand-500 group-hover:text-white transition-all">
+                            <i class="fa-solid fa-scale-balanced"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-3xl font-bold text-surface-900">82<span class="text-lg text-surface-300 font-medium">/100</span></h3>
+                        <p class="text-xs font-semibold text-accent-500 mt-1 flex items-center gap-1">
+                            <i class="fa-solid fa-star"></i> Excellent (+14)
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-surface-200 shadow-sm flex flex-col justify-between group hover:border-brand-500 transition-colors">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-xs font-bold text-surface-400 uppercase tracking-wider">Error Rate</span>
+                        <div class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center text-amber-500 group-hover:bg-amber-500 group-hover:text-white transition-all">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-3xl font-bold text-surface-900">1.2</h3>
+                        <p class="text-xs font-semibold text-accent-500 mt-1 flex items-center gap-1">
+                            <i class="fa-solid fa-check"></i> Below avg (2.0)
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-2xl border border-surface-200 shadow-sm flex flex-col">
+                    <h3 class="text-sm font-bold text-surface-900 mb-1">Standardized Performance</h3>
+                    <p class="text-xs text-surface-400 mb-6">Percentage and standardized SUS comparisons.</p>
+                    <div class="flex-1 flex flex-col items-center justify-center">
+                        <div class="chart-container">
+                            <canvas id="scoresChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-2xl border border-surface-200 shadow-sm flex flex-col">
+                    <h3 class="text-sm font-bold text-surface-900 mb-1">Friction Analysis</h3>
+                    <p class="text-xs text-surface-400 mb-6">Lower values indicate better platform performance.</p>
+                    <div class="flex-1 flex flex-col items-center justify-center">
+                        <div class="chart-container">
+                            <canvas id="frictionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Takeaways -->
+            <div class="bg-surface-900 p-8 rounded-3xl border border-white/5 shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-brand-500/10 blur-[100px] rounded-full"></div>
+                <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                    <i class="fa-solid fa-lightbulb text-brand-500"></i>
+                    Executive Observations
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+                    <div class="space-y-2">
+                        <h4 class="font-bold text-sm text-brand-500 uppercase tracking-widest">Strength</h4>
+                        <p class="text-sm text-surface-200 leading-relaxed">Infrastructure Overview cards received the highest efficiency scores due to clear visual hierarchy.</p>
+                    </div>
+                    <div class="space-y-2">
+                        <h4 class="font-bold text-sm text-rose-500 uppercase tracking-widest">Weakness</h4>
+                        <p class="text-sm text-surface-200 leading-relaxed">Live Sync feeds suffer from excessive motion, hindering rapid scanning of trace IDs.</p>
+                    </div>
+                    <div class="space-y-2">
+                        <h4 class="font-bold text-sm text-amber-500 uppercase tracking-widest">Opportunity</h4>
+                        <p class="text-sm text-surface-200 leading-relaxed">Refining secondary button affordance could improve feature discoverability by up to 25%.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 2: TASK ANALYSIS                      -->
+        <!-- ========================================== -->
+        <section id="view-tasks" class="view-section">
+            <div class="mb-8">
+                <h2 class="text-2xl font-extrabold text-surface-900 mb-2">Scenario Analysis</h2>
+                <p class="text-surface-600">Deep dive into specific user scenarios and qualitative observations from the DevOps cohort.</p>
+            </div>
+
+            <!-- Scenarios & Observations -->
+            <div class="space-y-4">
+                <!-- Task 1 -->
+                <div class="bg-white border border-surface-200 rounded-2xl overflow-hidden hover:shadow-md transition-shadow">
+                    <div class="p-5 bg-surface-100/50 border-b border-surface-200 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-lg bg-surface-900 text-white flex items-center justify-center text-xs font-bold">01</span>
+                            <h4 class="font-bold text-surface-900">System Health Check</h4>
+                        </div>
+                        <span class="text-[10px] font-extrabold text-accent-500 uppercase bg-accent-50 px-2 py-1 rounded">High Success</span>
+                    </div>
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <span class="text-[10px] font-bold text-surface-400 uppercase tracking-tighter">Objective</span>
+                            <p class="text-sm text-surface-600 mt-1 italic">"Locate edge latency and uptime status."</p>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-bold text-surface-400 uppercase tracking-tighter">Result</span>
+                            <p class="text-sm text-surface-700 mt-1">Users found KPIs within 4 seconds of landing. High cognitive resonance with the layout.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Task 2 -->
+                <div class="bg-white border-2 border-brand-500/20 rounded-2xl overflow-hidden shadow-sm">
+                    <div class="p-5 bg-brand-50/50 border-b border-brand-500/10 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-lg bg-brand-500 text-white flex items-center justify-center text-xs font-bold">02</span>
+                            <h4 class="font-bold text-surface-900">Node Troubleshooting</h4>
+                        </div>
+                        <span class="text-[10px] font-extrabold text-amber-600 uppercase bg-amber-50 px-2 py-1 rounded">Moderate Friction</span>
+                    </div>
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <span class="text-[10px] font-bold text-surface-400 uppercase tracking-tighter">Objective</span>
+                            <p class="text-sm text-surface-600 mt-1 italic">"Locate Node-Edge-02 and find throttle cause."</p>
+                        </div>
+                        <div class="relative">
+                            <span class="text-[10px] font-bold text-amber-600 uppercase tracking-tighter">Critical Insight</span>
+                            <p class="text-sm text-surface-700 mt-1">Participants spent 8s scanning for "I/O Load" due to bottom-weighted placement.</p>
+                            <div class="mt-4 p-4 bg-surface-50 border-l-4 border-brand-500 rounded-r-lg">
+                                <p class="text-sm text-surface-500 italic">"The orange alert drew me in, but the detail text felt hidden at the bottom."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Task 3 -->
+                <div class="bg-white border border-surface-200 rounded-2xl overflow-hidden">
+                    <div class="p-5 bg-surface-100/50 border-b border-surface-200 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-lg bg-surface-900 text-white flex items-center justify-center text-xs font-bold">03</span>
+                            <h4 class="font-bold text-surface-900">Log Analysis</h4>
+                        </div>
+                        <span class="text-[10px] font-extrabold text-rose-600 uppercase bg-rose-50 px-2 py-1 rounded">High Friction</span>
+                    </div>
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <span class="text-[10px] font-bold text-surface-400 uppercase tracking-tighter">Objective</span>
+                            <p class="text-sm text-surface-600 mt-1 italic">"Isolate a critical error cause in the live log."</p>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-bold text-rose-600 uppercase tracking-tighter">Pain Point</span>
+                            <p class="text-sm text-surface-700 mt-1">Auto-scrolling stream created "target chasing" behavior. Users felt they had to fight the UI to click a log line.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 3: ACTION PLAN                        -->
+        <!-- ========================================== -->
+        <section id="view-action" class="view-section">
+            <div class="mb-8">
+                <h2 class="text-2xl font-extrabold text-surface-900 mb-2">Priority Roadmap</h2>
+                <p class="text-surface-600">Actionable design improvements categorized by technical effort and user impact.</p>
+            </div>
+
+            <!-- Interactive Recommendations Filter -->
+            <div class="bg-white p-6 rounded-3xl border border-surface-200 shadow-xl mb-8">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                    <h3 class="font-bold text-surface-900">Optimization Backlog</h3>
+                    <div class="flex flex-wrap gap-2 p-1 bg-surface-100 rounded-xl">
+                        <button onclick="filterRecs('All')" id="flt-All" class="flt-btn px-4 py-1.5 rounded-lg text-xs font-bold bg-surface-900 text-white transition-all">All</button>
+                        <button onclick="filterRecs('Critical')" id="flt-Critical" class="flt-btn px-4 py-1.5 rounded-lg text-xs font-bold text-surface-500 hover:bg-white transition-all">Critical</button>
+                        <button onclick="filterRecs('High')" id="flt-High" class="flt-btn px-4 py-1.5 rounded-lg text-xs font-bold text-surface-500 hover:bg-white transition-all">High</button>
+                        <button onclick="filterRecs('Medium')" id="flt-Medium" class="flt-btn px-4 py-1.5 rounded-lg text-xs font-bold text-surface-500 hover:bg-white transition-all">Medium</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="recommendations-list">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="relative mt-12 py-8">
+                <div class="absolute left-1/2 top-0 bottom-0 w-0.5 bg-surface-200 -translate-x-1/2 hidden md:block"></div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <div class="relative md:text-right">
+                        <div class="md:absolute md:-right-[41px] md:top-2 w-5 h-5 rounded-full bg-brand-500 border-4 border-white shadow hidden md:block"></div>
+                        <h4 class="text-brand-600 font-bold text-xs uppercase tracking-widest mb-2">Immediate Release</h4>
+                        <div class="bg-surface-900 text-white p-6 rounded-2xl shadow-xl hover:scale-[1.02] transition-transform">
+                            <p class="text-sm font-bold mb-3">User Interface Patches</p>
+                            <ul class="text-xs text-surface-300 space-y-2">
+                                <li>• Pause-on-hover logic for log streams</li>
+                                <li>• Increased saturation for primary CTAs</li>
+                                <li>• High-contrast nav interaction states</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="relative pt-8 md:pt-0">
+                        <div class="md:absolute md:-left-[41px] md:top-2 w-5 h-5 rounded-full bg-accent-500 border-4 border-white shadow hidden md:block"></div>
+                        <h4 class="text-accent-500 font-bold text-xs uppercase tracking-widest mb-2">Sprint 2 Focus</h4>
+                        <div class="bg-white border border-surface-200 p-6 rounded-2xl shadow-sm hover:scale-[1.02] transition-transform">
+                            <p class="text-sm font-bold text-surface-900 mb-3">Architectural Updates</p>
+                            <ul class="text-xs text-surface-500 space-y-2">
+                                <li>• Information hierarchy redesign for Nodes</li>
+                                <li>• New "Infrastructure" iconography system</li>
+                                <li>• A/B testing for condensed sidebar modes</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <script>
+        function navigate(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('view-' + viewId).classList.add('active');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-brand-500', 'text-white', 'shadow-sm');
+                btn.classList.add('text-surface-200');
+            });
+            const activeBtn = document.getElementById('nav-' + viewId);
+            activeBtn.classList.remove('text-surface-200');
+            activeBtn.classList.add('bg-brand-500', 'text-white', 'shadow-sm');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        const recommendations = [
+            { priority: 'Critical', issue: 'Log Velocity', solution: 'Implement hover-pause on stream to prevent target chasing.', icon: 'fa-gauge-high' },
+            { priority: 'High', issue: 'Secondary Affordance', solution: 'Increase visual weight of secondary actions using elevation.', icon: 'fa-layer-group' },
+            { priority: 'Medium', issue: 'Icon Distinction', solution: 'Replace similar infrastructure/overview icons with distinct metaphors.', icon: 'fa-object-group' },
+            { priority: 'Medium', issue: 'Label Sizing', solution: 'Increase mono-label size for high-density metric grids.', icon: 'fa-text-size' }
+        ];
+
+        const badgeColors = {
+            'Critical': 'bg-rose-500 text-white',
+            'High': 'bg-amber-500 text-white',
+            'Medium': 'bg-brand-500 text-white'
+        };
+
+        function renderRecommendations(filter = 'All') {
+            const list = document.getElementById('recommendations-list');
+            list.innerHTML = '';
+            const filtered = filter === 'All' ? recommendations : recommendations.filter(r => r.priority === filter);
+            
+            filtered.forEach(rec => {
+                const color = badgeColors[rec.priority];
+                const html = `
+                    <div class="bg-surface-50 p-5 rounded-2xl border border-surface-200 flex items-start gap-4 hover:border-brand-500 transition-colors group">
+                        <div class="w-10 h-10 rounded-xl bg-white border border-surface-200 flex items-center justify-center text-surface-400 group-hover:text-brand-500 transition-colors">
+                            <i class="fa-solid ${rec.icon}"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-[8px] font-black uppercase px-1.5 py-0.5 rounded ${color}">${rec.priority}</span>
+                                <h4 class="text-sm font-bold text-surface-900">${rec.issue}</h4>
+                            </div>
+                            <p class="text-xs text-surface-500 leading-relaxed">${rec.solution}</p>
+                        </div>
+                    </div>
+                `;
+                list.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        function filterRecs(level) {
+            document.querySelectorAll('.flt-btn').forEach(btn => {
+                btn.classList.remove('bg-surface-900', 'text-white');
+                btn.classList.add('text-surface-500');
+            });
+            document.getElementById('flt-' + level).classList.replace('text-surface-500', 'bg-surface-900');
+            document.getElementById('flt-' + level).classList.add('text-white');
+            renderRecommendations(level);
+        }
+
+        function initCharts() {
+            const chartFont = { family: 'Plus Jakarta Sans', size: 11, weight: '500' };
+            
+            new Chart(document.getElementById('scoresChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['Success Rate (%)', 'SUS Score (0-100)'],
+                    datasets: [
+                        { label: 'Nexus', data: [85, 82], backgroundColor: '#8b5cf6', borderRadius: 8 },
+                        { label: 'Benchmark', data: [78, 68], backgroundColor: '#e4e4e7', borderRadius: 8 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { font: chartFont, usePointStyle: true } } },
+                    scales: {
+                        y: { max: 100, ticks: { font: chartFont } },
+                        x: { grid: { display: false }, ticks: { font: chartFont } }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('frictionChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['Time (s)', 'Errors (x10)'],
+                    datasets: [
+                        { label: 'Nexus', data: [42, 12], backgroundColor: '#06b6d4', borderRadius: 8 },
+                        { label: 'Benchmark', data: [60, 20], backgroundColor: '#e4e4e7', borderRadius: 8 }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { font: chartFont, usePointStyle: true } } },
+                    scales: {
+                        x: { ticks: { font: chartFont } },
+                        y: { grid: { display: false }, ticks: { font: chartFont } }
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderRecommendations('All');
+            initCharts();
+        });
+    </script>
+</body>
+</html>
